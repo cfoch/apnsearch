@@ -1,0 +1,157 @@
+<html>
+<head>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+  {% load staticfiles %}
+  <link rel="stylesheet" type="text/css" href="{% static 'personas/css/buscador.css' %}">
+  <script>
+    $(document).ready(function() {
+      function actualizar_tarjeta(data) {
+        no_data = "---";
+        $(".apellidos").html(data.apellidos ? data.apellidos : no_data);
+        $(".nombres").html(data.nombres ? data.nombres : no_data);
+        $(".email").html(data.email ? data.emai : no_data);
+        $(".consejo_regional").html(data.consejo_regional ? data.consejo_regional : no_data);
+        $(".fecha_incorporacion").html(data.fecha_incorporacion ? data.fecha_incorporacion : no_data);
+        $(".CPsP").html(data.CPsP ? data.CPsP : no_data);
+        $(".direccion").html(data.direccion ? data.direccion : "---");
+        $(".telefono").html(data.telefono ? data.telefono : no_data);
+        $(".foto").attr("src", data.foto ? data.foto : no_data);
+      };
+      $("#buscador").submit(function(event) {
+        var ajax_request;
+
+        event.preventDefault();
+
+        // $("#result").html('');
+        var values = $(this).serialize();
+
+        ajax_request = $.ajax({
+          url: "buscar/",
+          type: "post",
+          data: values
+        });
+
+        ajax_request.done(function(res, text_status, jqXHR) {
+          var rows, i;
+          $(".tarjeta").hide();
+          if (res.length > 0) {
+            $(".resultado").show();
+            $(".tarjeta").show();
+          } else {
+            alert("hola");
+            $(".resultado").show();
+            $("#result").html("<tr><td colspan=4>No se encontraron resultados.</td></tr>");
+          }
+
+          for (i = 0; i < res.length; i++) {
+            rows += "<tr class='actualizar_tarjeta " + res[i].CPsP + "' style='cursor: pointer'>" +
+                       "<td><strong>" + res[i].CPsP + "</strong></td>" +
+                       "<td>" + res[i].apellidos + "</td>" +
+                       "<td>" + res[i].nombres + "</td>" +
+                       "<td>" + res[i].consejo_regional + "</td>" +
+                     "</tr>";
+          }
+          $("#result").html(rows);
+
+          actualizar_tarjeta(res[0]);
+          $(".actualizar_tarjeta").on("click", function() {
+            var CPsP, persona;
+            CPsP = $(this).attr('class').split(' ')[1];
+            for (i = 0; i < res.length; i++) {
+              persona = res[i];
+              if (persona.CPsP == CPsP)
+                break;
+            }
+            actualizar_tarjeta(persona);
+          });
+        });
+        ajax_request.fail(function() {
+          $("#result").html("There is error while submit");
+        });
+      });
+    });
+  </script>
+</head>
+<body>
+  <div class="jumbotron text-center"><h2>BUSQUE A SU PSICÓLOGO</h2></div>
+  <div class="row col-md-12">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+      <form id="buscador">
+        {% csrf_token %}
+        <div class="form-group">
+          <input type="text" name="CPsP" placeholder="CPsP" class="form-control"/>
+        </div>
+        <div class="form-group">
+          <input type="text" name="apellidos" placeholder="APELLIDOS" class="form-control"/>
+        </div>
+        <div class="form-group">
+          <input type="text" name="nombres" placeholder="NOMBRES" class="form-control"/>
+        </div>
+        <input type="submit" value="BUSCAR" class="btn btn-default btn-block"/>
+      </form>
+    </div>
+    <div class="col-md-4"></div>
+  </div>
+  <div class="row col-md-12">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+      <table class="table table-hover resultado" hidden="true">
+        <thead>
+          <tr>
+            <td><strong>CPsP</strong></td>
+            <td><strong>Apellidos</strong></td>
+            <td><strong>Nombres</strong></td>
+            <td><strong>Consejo Regional</strong></td>
+          </tr>
+        </thead>
+        <tbody id="result">
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row col-md-12">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+      <table class="table borderless tarjeta" hidden="true">
+        <tr>
+          <td><img src="{% static 'personas/img/profile_default.png' %}" class="foto"></img></td>
+          <td class="text-right"><strong>CPsP: </strong><span class="CPsP"></span></td>
+        </tr>
+        <tr><td colspan="2"><strong>APELLIDOS:</strong></td></tr>
+        <tr><td colspan="2" class="apellidos"></td></tr>
+        <tr><td colspan="2"><strong>NOMBRES:</strong></td></tr>
+        <tr><td colspan="2" class="nombres"></td></tr>
+        <tr>
+          <td><strong>E-MAIL:</strong></td>
+          <td><strong>CONSEJO REGIONAL:</strong></td>
+        </tr>
+        <tr>
+          <td class="email"></td>
+          <td class="consejo_regional"></td>
+        </tr>
+        <tr>
+          <td><strong>DIRECCION:</strong></td>
+          <td><strong>TELEFONO:</strong></td>
+        </tr>
+        <tr>
+          <td class="direccion"></td>
+          <td class="telefono"></td>
+        </tr>
+        <tr><td colspan="2"><strong>FECHA DE INCORPORACION:</strong></td></tr>
+        <tr><td colspan="2" class="fecha_incorporacion"></td></tr>
+      </table>
+    </div>
+    <div class="col-md-3"></div>
+  </div>
+  
+</body>
+</html>

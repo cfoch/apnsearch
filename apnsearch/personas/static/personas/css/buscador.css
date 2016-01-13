@@ -1,0 +1,29 @@
+body {
+  background-color: #204CA9;
+}
+
+.table thead { 
+  background-color: #FEC938;
+}
+
+.resultado td {
+  text-align: center;
+}
+
+.borderless tbody tr td {
+  border: none;
+}
+
+table.resultado tbody {
+  background-color: #FFFFFF;
+}
+
+table.tarjeta {
+  background-color: #FFFFFF;
+  border: 2px solid black;
+}
+
+table.tarjeta tr td {
+  height: 10px;
+}
+
