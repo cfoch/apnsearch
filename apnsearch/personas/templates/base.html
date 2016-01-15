@@ -1,0 +1,110 @@
+<html>
+<head>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+  <script>
+    $(document).ready(function() {
+      function actualizar_tarjeta(data) {
+        no_data = "---";
+        $(".apellidos").html(data.apellidos ? data.apellidos : no_data);
+        $(".nombres").html(data.nombres ? data.nombres : no_data);
+        $(".email").html(data.email ? data.emai : no_data);
+        $(".consejo_regional").html(data.consejo_regional ? data.consejo_regional : no_data);
+        $(".fecha_incorporacion").html(data.fecha_incorporacion ? data.fecha_incorporacion : no_data);
+        $(".CPsP").html(data.CPsP ? data.CPsP : no_data);
+        $(".direccion").html(data.direccion ? data.direccion : "---");
+        $(".telefono").html(data.telefono ? data.telefono : no_data);
+        $(".foto").attr("src", data.foto ? data.foto : 'static/personas/img/profile_default.png');
+      };
+
+      function getCookie(name) {
+          var cookieValue = null;
+          if (document.cookie && document.cookie != '') {
+              var cookies = document.cookie.split(';');
+              for (var i = 0; i < cookies.length; i++) {
+                  var cookie = jQuery.trim(cookies[i]);
+                  // Does this cookie string begin with the name we want?
+                  if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+      }
+      var csrftoken = getCookie('csrftoken');
+
+      function csrfSafeMethod(method) {
+          // these HTTP methods do not require CSRF protection
+          return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+      }
+      $.ajaxSetup({
+          beforeSend: function(xhr, settings) {
+              if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                  xhr.setRequestHeader("X-CSRFToken", csrftoken);
+              }
+          }
+      });
+
+      $(".actualizar_tarjeta").on("click", function(event) {
+        var ajax_request;
+
+        event.preventDefault();
+
+        var values = {};
+        values["CPsP"] = $(this).attr('class').split(' ')[1];
+
+        ajax_request = $.ajax({
+          url: "buscar/",
+          type: "post",
+          data: values
+        });
+
+        ajax_request.done(function(res, text_status, jqXHR) {
+          alert(res);
+          actualizar_tarjeta(res);
+        });
+        ajax_request.fail(function() {
+          $("#result").html("There is error while submit");
+        });
+
+      });
+    });
+  </script>
+
+  </script>
+  {% load staticfiles %}
+  <link rel="stylesheet" type="text/css" href="{% static 'personas/css/buscador.css' %}">
+</head>
+<body>
+  <div class="jumbotron text-center"><h2>BUSQUE A SU PSICÓLOGO</h2></div>
+  <div class="row col-md-12">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+      <form id="buscador" action="." method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <input type="text" name="CPsP" placeholder="CPsP" class="form-control"/>
+        </div>
+        <div class="form-group">
+          <input type="text" name="apellidos" placeholder="APELLIDOS" class="form-control"/>
+        </div>
+        <div class="form-group">
+          <input type="text" name="nombres" placeholder="NOMBRES" class="form-control"/>
+        </div>
+        <input type="submit" value="BUSCAR" class="btn btn-default btn-block"/>
+      </form>
+    </div>
+    <div class="col-md-4"></div>
+  </div>
+  {% block resultados %}{% endblock %}
+  {% block tarjeta %}{% endblock %}
+</body>
+</html>

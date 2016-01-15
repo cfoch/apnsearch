@@ -14,17 +14,18 @@ class Persona(models.Model):
     nombres = models.CharField(max_length=255)
     apellidos = models.CharField(max_length=255)
     telefono = models.CharField(max_length=15)
-    fecha_incorporacion = models.DateField()
-    email = models.EmailField(null=True)
+    fecha_incorporacion = models.DateField(null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
     consejo_regional = models.ForeignKey(ConsejoRegional)
-    foto = models.ImageField(upload_to='fotos', null=True)
-    direccion = models.CharField(max_length=512, null=True)
+    foto = models.ImageField(upload_to='fotos', null=True, blank=True)
+    direccion = models.CharField(max_length=512, null=True, blank=True)
 
 
     def save(self, *args, **kwargs):
         self.nombres = self.nombres.upper()
         self.apellidos = self.apellidos.upper()
         self.direccion = self.direccion.upper()
+
         super(Persona, self).save(*args, **kwargs)
 
     def __str__(self):

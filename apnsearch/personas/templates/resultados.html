@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block resultados %}
+  <div class="row col-md-12">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+      <table class="table table-hover resultado">
+        <thead>
+          <tr>
+            <td><strong>CPsP</strong></td>
+            <td><strong>Apellidos</strong></td>
+            <td><strong>Nombres</strong></td>
+            <td><strong>Consejo Regional</strong></td>
+          </tr>
+        </thead>
+        <tbody id="result">
+          {% for p in personas %}
+            <tr style="cursor: pointer;" class="actualizar_tarjeta {{ p.CPsP }}">
+              <td>{{ p.CPsP }}</td>
+              <td>{{ p.nombres }}</td>
+              <td>{{ p.apellidos }}</td>
+              <td>{{ p.consejo_regional }}</td>
+            </tr>
+          {% empty %}
+              <td colspan=4>No se encontraron resultados</td>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+
+{% block tarjeta %}
+
+  <div class="row col-md-12">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+      <table class="table borderless tarjeta">
+        <tr>
+          <td><img src="{% if persona.foto %}{{ persona.foto.url }}{% else %}/static/personas/img/profile_default.png {% endif %}" height=180px class="foto"></img></td>
+          <td class="text-right"><strong>CPsP: </strong><span class="CPsP">{{ persona.CPsP }}</span></td>
+        </tr>
+        <tr><td colspan="2"><strong>APELLIDOS:</strong></td></tr>
+        <tr><td colspan="2" class="apellidos">{{ persona.apellidos }}</td></tr>
+        <tr><td colspan="2"><strong>NOMBRES:</strong></td></tr>
+        <tr><td colspan="2" class="nombres">{{ persona.nombres }}</td></tr>
+        <tr>
+          <td><strong>E-MAIL:</strong></td>
+          <td><strong>CONSEJO REGIONAL:</strong></td>
+        </tr>
+        <tr>
+          <td class="email">{{ persona.email }}</td>
+          <td class="consejo_regional">{{ persona.consejo_regional }}</td>
+        </tr>
+        <tr>
+          <td><strong>DIRECCION:</strong></td>
+          <td><strong>TELEFONO:</strong></td>
+        </tr>
+        <tr>
+          <td class="direccion">{{ persona.direccion }}</td>
+          <td class="telefono">{{ persona.telefono }}</td>
+        </tr>
+        <tr><td colspan="2"><strong>FECHA DE INCORPORACION:</strong></td></tr>
+        <tr><td colspan="2" class="fecha_incorporacion">{{ persona.fecha_incorporacion }}</td></tr>
+      </table>
+    </div>
+    <div class="col-md-3"></div>
+  </div>
+{% endblock %}
