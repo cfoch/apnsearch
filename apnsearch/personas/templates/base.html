@@ -21,7 +21,7 @@
         $(".CPsP").html(data.CPsP ? data.CPsP : no_data);
         $(".direccion").html(data.direccion ? data.direccion : "---");
         $(".telefono").html(data.telefono ? data.telefono : no_data);
-        $(".foto").attr("src", data.foto ? data.foto : 'static/personas/img/profile_default.png');
+        $(".foto").attr("src", data.foto ? data.foto : '/static/personas/img/profile_default.png');
       };
 
       function getCookie(name) {
@@ -68,7 +68,6 @@
         });
 
         ajax_request.done(function(res, text_status, jqXHR) {
-          alert(res);
           actualizar_tarjeta(res);
         });
         ajax_request.fail(function() {
@@ -88,7 +87,7 @@
   <div class="row col-md-12">
     <div class="col-md-4"></div>
     <div class="col-md-4">
-      <form id="buscador" action="." method="post">
+      <form id="buscador" action="/buscador/" method="post">
         {% csrf_token %}
         <div class="form-group">
           <input type="text" name="CPsP" placeholder="CPsP" class="form-control"/>

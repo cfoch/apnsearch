@@ -20,8 +20,8 @@ def index(request):
                 personas = Persona.objects.filter(CPsP=CPsP)
             elif nombres or apellidos:
                 personas = Persona.objects.filter(
-                    nombres__contains=nombres
-                ).filter(apellidos__contains=apellidos)
+                    nombres__icontains=nombres
+                ).filter(apellidos__icontains=apellidos)
             print(personas)
         except:
             pass
