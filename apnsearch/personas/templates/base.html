@@ -1,5 +1,6 @@
 <html>
 <head>
+  <title>Asociación Peruana de Neuropsicologos | Busque a su neuropsicólogo</title>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
   <!-- Latest compiled and minified CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
@@ -11,6 +12,15 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
   <script>
     $(document).ready(function() {
+      $(".departamentos").on("change", function(event) {
+        var departamento = $(".departamentos option:selected").val();
+        window.location.replace("./?departamento=" + departamento);
+      });
+      $(".provincias").on("change", function(event) {
+        var provincia = $(".provincias option:selected").val();
+        window.location.replace("./?provincia=" + provincia);
+      });
+
       function actualizar_tarjeta(data) {
         no_data = "---";
         $(".apellidos").html(data.apellidos ? data.apellidos : no_data);
@@ -83,11 +93,11 @@
   <link rel="stylesheet" type="text/css" href="{% static 'personas/css/buscador.css' %}">
 </head>
 <body>
-  <div class="jumbotron text-center"><h2>BUSQUE A SU PSICÓLOGO</h2></div>
+  <div class="jumbotron text-center"><h2>BUSQUE A SU NEUROPSICÓLOGO</h2></div>
   <div class="row col-md-12">
     <div class="col-md-4"></div>
     <div class="col-md-4">
-      <form id="buscador" action="/buscador/" method="post">
+      <form id="buscador" action="/" method="post">
         {% csrf_token %}
         <div class="form-group">
           <input type="text" name="CPsP" placeholder="CPsP" class="form-control"/>
@@ -98,6 +108,58 @@
         <div class="form-group">
           <input type="text" name="nombres" placeholder="NOMBRES" class="form-control"/>
         </div>
+        <div class="form-group">
+          <select class="form-control departamentos" name="departamento"/>
+            <option selected {% if not departamento %}disabled{% endif %}>Seleccione el departamento</option>
+            {% for dep in departamentos %}
+              {% if dep and departamento.id == dep.id %}
+                <option value="{{ dep.id }}" selected>{{ dep.nombre }}</option>
+              {% else %}
+                <option value="{{ dep.id }}">{{ dep.nombre }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+        {% if departamento or provincia %}
+          {% if provincias %}
+            <div class="form-group">
+              <select class="form-control provincias" name="provincia"/>
+                <option selected {% if not provincia %}disabled{% endif %}>Seleccione la provincia</option>
+                {% for prov in provincias %}
+                  {% if prov and provincia.id == prov.id %}
+                    <option value="{{ prov.id }}" selected>{{ prov.nombre }}</option>
+                  {% else %}
+                    <option value="{{ prov.id }}">{{ prov.nombre }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+          {% else %}
+            <div class="form-group">
+              <select class="form-control"/>
+                <option selected disabled>No hay provincia disponible</option>
+              </select>
+            </div>
+          {% endif %}
+        {% endif %}
+
+        {% if provincia %}
+          {% if distritos %}
+            <div class="form-group">
+              <select class="form-control" name="distrito"/>
+                {% for dist in distritos %}
+                  <option value="{{ dist.id }}">{{ dist.nombre }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          {% else %}
+            <div class="form-group">
+              <select class="form-control"/>
+                <option selected disabled>No hay distrito disponible</option>
+              </select>
+            </div>
+          {% endif %}
+        {% endif %}
         <input type="submit" value="BUSCAR" class="btn btn-default btn-block"/>
       </form>
     </div>

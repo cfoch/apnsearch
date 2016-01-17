@@ -9,6 +9,29 @@ class ConsejoRegional(models.Model):
     def __str__(self):
         return self.nombre
 
+class Departamento(models.Model):
+    nombre = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.nombre
+
+
+class Provincia(models.Model):
+    nombre = models.CharField(max_length=255)
+    departamento = models.ForeignKey(Departamento)
+
+    def __str__(self):
+        return str(self.departamento) + ", " + self.nombre
+
+
+class Distrito(models.Model):
+    nombre = models.CharField(max_length=255)
+    provincia = models.ForeignKey(Provincia)
+
+    def __str__(self):
+        return str(self.provincia) + ", " + self.nombre
+
+
 class Persona(models.Model):
     CPsP = models.IntegerField(unique=True)
     nombres = models.CharField(max_length=255)
@@ -19,11 +42,13 @@ class Persona(models.Model):
     consejo_regional = models.ForeignKey(ConsejoRegional)
     foto = models.ImageField(upload_to='fotos', null=True, blank=True)
     direccion = models.CharField(max_length=512, null=True, blank=True)
-
+    distrito = models.ForeignKey(Distrito, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         self.nombres = self.nombres.upper()
         self.apellidos = self.apellidos.upper()
+        if not self.direccion and self.distrito:
+            self.direccion = str(self.distrito)
         self.direccion = self.direccion.upper()
 
         super(Persona, self).save(*args, **kwargs)
